@@ -1,25 +1,27 @@
+let travaux = []
+
 async function recupererTravaux () {
     
     const reponse = await fetch("http://localhost:5678/api/works")
-    const travaux = await reponse.json()
+    travaux = await reponse.json()
+};
 
+function afficherTravaux(listeTravaux) {
     const gallery = document.querySelector(".gallery")
 
-    for(let i = 0; i < travaux.length; i++){
+    for(let i = 0; i < listeTravaux.length; i++){
     const figure = document.createElement("figure")
     const image = document.createElement("img")
     const figcaption = document.createElement ("figcaption")
 
-    figcaption.innerText = travaux[i].title
-    image.setAttribute("src", travaux[i].imageUrl)
+    figcaption.innerText = listeTravaux[i].title
+    image.setAttribute("src", listeTravaux[i].imageUrl)
 
     figure.appendChild(image)
     figure.appendChild(figcaption)
     gallery.appendChild(figure)
     }
-}
-
-recupererTravaux()
+};
 
 async function recupererButton() {
     const reponse = await fetch("http://localhost:5678/api/categories")
@@ -29,6 +31,13 @@ async function recupererButton() {
 
     const buttonAll = document.createElement("button")
     buttonAll.innerText = "Tous"
+
+    buttonAll.addEventListener("click", function () {
+        const gallery = document.querySelector(".gallery")
+        gallery.innerHTML = ""
+        afficherTravaux(travaux)
+    });
+
     filters.appendChild(buttonAll)
 
     for(let i=0; i<categorie.length; i++) {
@@ -36,9 +45,28 @@ async function recupererButton() {
 
         button.innerText = categorie[i].name
 
-        filters.appendChild(button)
-    }
+        button.setAttribute("data-category-id", categorie[i].id)
 
+        button.addEventListener("click", function(event) {
+            const categorieId = event.target.dataset.categoryId
+            const travauxFiltrees = travaux.filter(function(travail) {
+            return travail.categoryId === Number(categorieId)
+        });
+
+        const gallery = document.querySelector(".gallery")
+        gallery.innerHTML = ""
+
+        afficherTravaux(travauxFiltrees)
+        })
+
+        filters.appendChild(button)
+    };
 }
 
-recupererButton()
+async function initialiser() {
+    await recupererTravaux()
+    afficherTravaux(travaux)
+    recupererButton()
+}
+
+initialiser()
