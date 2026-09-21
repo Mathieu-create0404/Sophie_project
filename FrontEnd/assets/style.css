@@ -272,3 +272,13 @@ section.main-content {
 .main-content {
 	flex: 1;
 }
+
+.main-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#message-error {
+	color: red;
+}
