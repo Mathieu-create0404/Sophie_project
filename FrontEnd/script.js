@@ -87,12 +87,29 @@ async function recupererButton() {
 
         filters.appendChild(button)
     };
-}
+};
+
+function afficherTravauxModal(listeTravaux) {
+    const galleryContent = document.querySelector(".gallery-content")
+
+    for(let i = 0; i < listeTravaux.length; i++){
+    const figure = document.createElement("figure")
+    const image = document.createElement("img")
+    const deleteImg = document.createElement("button")
+
+    image.setAttribute("src", listeTravaux[i].imageUrl)
+
+    figure.appendChild(image)
+    figure.appendChild(deleteImg)
+    galleryContent.appendChild(figure)
+    }
+};
 
 async function initialiser() {
     await recupererTravaux()
     afficherTravaux(travaux)
     recupererButton()
+    afficherTravauxModal(travaux)
 }
 
 initialiser()

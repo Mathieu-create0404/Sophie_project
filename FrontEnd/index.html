@@ -45,7 +45,47 @@
 			<h2>Mes Projets</h2>
 			<div class="add-mod">
 				<i class="fa-regular fa-pen-to-square"></i>
-				<a class="modifier" href="#">Modifier</a>
+				<a class="modifier" href="#modal1">Modifier</a>
+				<aside id="modal1" class="modal" aria-hidden="true" role="dialog">
+					<div class="modal-wrapper">
+						<div class="modal-gallery">
+							<button class="close"><i class="fa-solid fa-xmark"></i></button>
+							<h2>Galerie photos</h2>
+							<div class="gallery-content">
+
+							</div>
+							<button class="switch-add-photo">Ajouter une photo</button>
+						</div>
+						<div class="modal-form">
+							<div class="flex-top">
+								<div class="flex-button">
+									<button class="back"><i class="fa-solid fa-arrow-left"></i></button>
+									<button class="close"><i class="fa-solid fa-xmark"></i></button>
+								</div>
+								<h2>Ajout photo</h2>
+								<div class="add-photo-content">
+									<i class="fa-regular fa-image"></i>
+									<label for="add-photo-file">+ Ajouter photo</label>
+									<input type="file" name="add-photo-file" id="add-photo-file">
+									<p>jpg, png : 4mo max</p>
+								</div>
+							</div>
+								<form>
+									<label for="title">Titre</label><br>
+									<input type="text" name="title" id="title"><br>
+									<label for="category">Catégorie</label><br>
+									<select>
+										<option></option>
+										<option></option>
+										<option></option>
+									</select><br>
+								</form>
+							<div class="flex-top">
+								<button type="submit" class="submit-form">Valider</button>
+							</div>
+						</div>
+					</div>
+				</aside>
 			</div>
 		</div>
 		<div class="filters">
