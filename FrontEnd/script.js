@@ -1,4 +1,30 @@
 let travaux = []
+const token = window.localStorage.getItem("token");
+const editionMod = document.querySelector(".edition-mod");
+const addMod = document.querySelector(".add-mod")
+const login = document.querySelector("header nav a");
+const filtersButton = document.querySelector(".filters")
+
+if (token) {
+    editionMod.classList.add("visible")
+    addMod.classList.add("visible")
+    filtersButton.classList.add("cache")
+    login.textContent = "Logout"
+} else {
+    editionMod.classList.remove("visible")
+    addMod.classList.remove("visible")
+    filtersButton.classList.remove("cache")
+}
+
+login.addEventListener("click", function (event) {
+    if (token) {
+    event.preventDefault()
+    window.localStorage.removeItem("token")
+    window.location.href = "index.html"
+    }
+});
+
+
 
 async function recupererTravaux () {
     
@@ -70,3 +96,4 @@ async function initialiser() {
 }
 
 initialiser()
+

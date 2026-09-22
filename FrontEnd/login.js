@@ -1,7 +1,8 @@
 const email = document.querySelector("#e-mail");
 const motDePasse = document.querySelector("#mot-de-passe");
 const formulaire = document.querySelector("#login-form");
-const messageErreur = document.querySelector("#message-error")
+const messageErreur = document.querySelector("#message-error");
+
    
 formulaire.addEventListener("submit", async function(event) {
     event.preventDefault()
@@ -28,4 +29,6 @@ formulaire.addEventListener("submit", async function(event) {
         messageErreur.textContent = "Identifiant ou mot de passe incorrect."
         };
 });
+
+
 
