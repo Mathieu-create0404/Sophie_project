@@ -29,7 +29,9 @@ const fileModalContentElement = fileModalContent.querySelectorAll ("i, label, p"
 const fileModal = document.querySelector("#add-photo-file")
 const titleModal = document.querySelector("#title")
 const selectModal = document.querySelector(".js-form select")
+const messageError = document.querySelector(".message-erreur")
 
+// gestion du token + page//
 if (token) {
     editionMod.classList.add("visible")
     addMod.classList.add("visible")
@@ -91,8 +93,18 @@ async function createFilters() {
     buttonAll.innerText = "Tous"
 
     buttonAll.addEventListener("click", function () {
+
+        const button = document.querySelectorAll(".filters button")
+
+        for (let i = 0; i < button.length; i++) {
+        button[i].classList.remove("filter-active")
+    };
+
+        buttonAll.classList.add("filter-active")
+
         const gallery = document.querySelector(".gallery")
         gallery.innerHTML = ""
+
         afficherTravaux(travaux)
     });
 
@@ -106,20 +118,31 @@ async function createFilters() {
         button.setAttribute("data-category-id", categories[i].id)
 
         button.addEventListener("click", function(event) {
-            const categoriesId = event.target.dataset.categoryId
+
+            const button = document.querySelectorAll(".filters button")
+
+            for (let i = 0; i < button.length; i++) {
+            button[i].classList.remove("filter-active")
+            };
+
+            event.target.classList.add("filter-active")
+            
+            const categoriesId = event.target.dataset.categoryId;
+
             const travauxFiltrees = travaux.filter(function(travail) {
-            return travail.categoryId === Number(categoriesId)
-        });
+            return travail.categoryId === Number(categoriesId);                
+            });
+            
+            const gallery = document.querySelector(".gallery")
+            gallery.innerHTML = ""
 
-        const gallery = document.querySelector(".gallery")
-        gallery.innerHTML = ""
-
-        afficherTravaux(travauxFiltrees)
-        })
+            afficherTravaux(travauxFiltrees)
+        });        
 
         filters.appendChild(button)
     };
 };
+
 
 
 function afficherTravauxModal(listeTravaux) {
@@ -129,6 +152,9 @@ function afficherTravauxModal(listeTravaux) {
     const figure = document.createElement("figure")
     const image = document.createElement("img")
     const deleteImg = document.createElement("button")
+
+    deleteImg.classList.add("delete-button");
+    deleteImg.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
 
     image.setAttribute("src", listeTravaux[i].imageUrl)
     deleteImg.dataset.id = listeTravaux[i].id;
@@ -143,7 +169,7 @@ function afficherTravauxModal(listeTravaux) {
         });
 
         if (reponse.ok) {
-            event.target.parentElement.remove()
+            event.target.closest("figure").remove()
             const travauxFiltrees = travaux.filter(function(travail) {
                 return travail.id !== Number(deleteImg.dataset.id)
 
@@ -164,8 +190,9 @@ function afficherTravauxModal(listeTravaux) {
     }
 };
 
-// Partie gestion changement / ouverture / fermeture //
 
+
+// Partie gestion changement / ouverture / fermeture //
 modifyButton.addEventListener("click", () => {
     modal.classList.add("visible")
 });
@@ -212,7 +239,15 @@ fileModal.addEventListener("change", (event) => {
     });
 });
 
+
+
 async function createCategories() {
+
+    const optionVide = document.createElement("option");
+    optionVide.innerText = "";
+    optionVide.value = "";
+    selectModal.appendChild(optionVide);
+
     for (let i = 0; i < categories.length; i++) {
         const option = document.createElement("option")
 
@@ -223,6 +258,9 @@ async function createCategories() {
     }
 };
 
+
+
+//Envoie à l'API nouvelles données via modal //
 modalForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -230,28 +268,75 @@ modalForm.addEventListener("submit", async (event) => {
     const title = titleModal.value;
     const categorie = selectModal.value
 
-    const formData = new FormData();
-    formData.append("image", file);
-    formData.append("title", title);
-    formData.append("category", categorie);
+    if (title === "") {
+        messageError.textContent = "Veuillez saisir un titre";
+    } else if (file === undefined) {
+                messageError.textContent = "Veuillez sélectionner un fichier";
+        } else if (categorie === "") {
+                     messageError.textContent = "Veuillez sélectionner une catégorie";
+    } else {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("title", title);
+        formData.append("category", categorie);
 
-    const reponse = await fetch("http://localhost:5678/api/works", {
-        method: "POST",
-        headers: {
-        Authorization: `Bearer ${token}`
-    },
-        body: formData
+        const reponse = await fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: {
+            Authorization: `Bearer ${token}`
+        },
+            body: formData
+        });
+
+        if(reponse.ok){
+            const newWork = await reponse.json();
+
+            travaux.push(newWork);
+
+            afficherTravaux([newWork]);
+            afficherTravauxModal([newWork]);
+
+            modalForm.reset()
+
+            const image = fileModalContent.querySelector("img");
+
+            if (image) {
+                image.remove()
+                fileModalContentElement.forEach((contentElement) => {
+                    contentElement.classList.remove("cache")
+                });
+            }
+        } 
+    };  
+});
+
+
+
+// bouton vert quand condition modal remplie//
+function checkForm () {
+
+    const submitForm = document.querySelector(".submit-form");
+
+    if (titleModal.value !== "" && fileModal.files[0] !== undefined && selectModal.value !== "") {
+        submitForm.classList.add("active")
+    } else {
+        submitForm.classList.remove("active")
+    };
+};
+
+titleModal.addEventListener("input", () => {
+    checkForm();
     });
 
-    if(reponse.ok){
-        const newWork = await reponse.json();
-
-        travaux.push(newWork);
-
-        afficherTravaux([newWork]);
-        afficherTravauxModal([newWork]);
-    } 
+fileModal.addEventListener("change", () => {
+    checkForm();
 });
+
+selectModal.addEventListener("change", () => {
+    checkForm();
+});
+
+
 
 async function initialiser() {
     await recupererTravaux()

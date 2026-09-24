@@ -200,6 +200,11 @@ footer nav ul {
     gap: 10px;
 }
 
+.filters button.filter-active {
+	background-color: #1D6154;
+	color: white;
+}
+
 .filters button {
     border: 1px solid #1D6154;
     border-radius: 60px;
@@ -209,14 +214,6 @@ footer nav ul {
     background: none;
 	font-family: syne;
     color: #1D6154;
-}
-
-.filters .active {
-	background: #1D6154;
-	color: white;
-}
-
-.filters button {
 	cursor: pointer;
 }
 
@@ -439,6 +436,23 @@ display: block;
 	margin-bottom: 20px;
 }
 
+.delete-button {
+	display: flex;
+	align-items: center;
+    justify-content: center;
+	background-color: black;
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 2px;
+	width: 17px;
+    height: 17px;
+    font-size: 10px;
+    position: relative;
+    left: 55px;
+	bottom: 100px;
+	cursor: pointer;
+}
+
 
 .back {
 	position: relative;
@@ -495,6 +509,7 @@ label[for="add-photo-file"] {
     padding: 10px 20px;
     background-color: #CBD6DC;
     color: #306685;
+	cursor: pointer;
 }
 
 .modal-form form {
@@ -532,4 +547,17 @@ label[for="add-photo-file"] {
     padding: 0 100px;
     font-size: 14px;
     font-weight: bold;
+	cursor: pointer;
 }
+
+.submit-form.active {
+	background-color: #1D6154;
+	transition: 0.3s;
+}
+
+.message-erreur {
+	color: red;
+	position: relative;
+    top: 30px;
+}
+
