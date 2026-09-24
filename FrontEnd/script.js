@@ -228,7 +228,6 @@ backButton.addEventListener("click", () => {
 fileModal.addEventListener("change", (event) => {
     const fichier = event.target.files[0]
     const imageURL = URL.createObjectURL(fichier);
-    console.log(imageURL);
     const image = document.createElement("img")
     image.src = imageURL
 

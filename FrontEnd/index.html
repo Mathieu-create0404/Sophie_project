@@ -46,7 +46,7 @@
 			<div class="add-mod">
 				<i class="fa-regular fa-pen-to-square"></i>
 				<a class="modifier" href="#modal1">Modifier</a>
-				<aside id="modal1" class="modal" aria-hidden="true" role="dialog">
+				<aside id="modal1" class="modal">
 					<div class="modal-wrapper">
 						<div class="modal-gallery">
 							<button class="close"><i class="fa-solid fa-xmark"></i></button>
@@ -74,7 +74,7 @@
 									<label for="title">Titre</label><br>
 									<input type="text" name="title" id="title"><br>
 									<label for="category">Catégorie</label><br>
-									<select>
+									<select id="category" name="category">
 										
 									</select><br>
 								</form>
@@ -99,12 +99,12 @@
 		<p>Vous avez un projet ? Discutons-en !</p>
 		<form action="#" method="post">
 			<label for="name">Nom</label>
-			<input type="text" name="name" id="name">
+			<input type="text" name="name" id="name" autocomplete="name">
 			<label for="email">Email</label>
-			<input type="email" name="email" id="email">
+			<input type="email" name="email" id="email" autocomplete="email">
 			<label for="message">Message</label>
 			<textarea name="message" id="message" cols="30" rows="10"></textarea>
-			<input type="submit" value="Envoyer">
+			<input type="submit" name="envoyer" id="envoyer" value="Envoyer">
 		</form>
 	</section>
 </main>
