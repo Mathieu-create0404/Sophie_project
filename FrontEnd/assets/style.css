@@ -534,13 +534,6 @@ label[for="add-photo-file"] {
     font-family: 'Work Sans';
 }
 
-.login-form input {
-    padding: 15px;
-    font-size: 14px;
-    color: #444444;
-    font-family: 'Work Sans';
-}
-
 .modal-form form label {
 	font-size: 14px;
 	font-weight: 500;

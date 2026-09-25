@@ -1,4 +1,4 @@
-let travaux = []
+let works = []
 let categories = []
 
 
@@ -19,17 +19,17 @@ const backButton = document.querySelector(".back");
 
 //gestion des affichages intra-modal//
 const accessForm = document.querySelector(".switch-add-photo");
-const affichageGallery = document.querySelector(".modal-gallery")
-const affichageForm = document.querySelector(".modal-form")
+const galleryDisplay = document.querySelector(".modal-gallery")
+const formDisplay = document.querySelector(".modal-form")
 
 // formulaire de la modal //
 const modalForm = document.querySelector(".js-form");
 const fileModalContent = document.querySelector(".add-photo-content")
 const fileModalContentElement = fileModalContent.querySelectorAll ("i, label, p")
-const fileModal = document.querySelector("#add-photo-file")
-const titleModal = document.querySelector("#title")
-const selectModal = document.querySelector(".js-form select")
-const messageError = document.querySelector(".message-erreur")
+const modalFile = document.querySelector("#add-photo-file")
+const modalTitle = document.querySelector("#title")
+const modalSelect = document.querySelector(".js-form select")
+const errorMessage = document.querySelector(".message-erreur")
 
 // gestion du token + page//
 if (token) {
@@ -53,22 +53,22 @@ login.addEventListener("click", function (event) {
 
 
 
-async function recupererTravaux () {
+async function getWorks () {
     
-    const reponse = await fetch("http://localhost:5678/api/works")
-    travaux = await reponse.json()
+    const response = await fetch("http://localhost:5678/api/works")
+    works = await response.json()
 };
 
-function afficherTravaux(listeTravaux) {
+function displayWorks (worksList) {
     const gallery = document.querySelector(".gallery")
 
-    for(let i = 0; i < listeTravaux.length; i++){
+    for(let i = 0; i < worksList.length; i++){
     const figure = document.createElement("figure")
     const image = document.createElement("img")
     const figcaption = document.createElement ("figcaption")
 
-    figcaption.innerText = listeTravaux[i].title
-    image.setAttribute("src", listeTravaux[i].imageUrl)
+    figcaption.innerText = worksList[i].title
+    image.setAttribute("src", worksList[i].imageUrl)
 
     figure.appendChild(image)
     figure.appendChild(figcaption)
@@ -76,16 +76,16 @@ function afficherTravaux(listeTravaux) {
     }
 };
 
-async function recupererCategorie() {
-    const reponse = await fetch("http://localhost:5678/api/categories")
-    const categories = await reponse.json()
+async function getCategories() {
+    const response = await fetch("http://localhost:5678/api/categories")
+    const categories = await response.json()
 
     return categories
 }
 
 async function createFilters() {
 
-    categories = await recupererCategorie()
+    categories = await getCategories()
 
     const filters = document.querySelector(".filters")
 
@@ -105,7 +105,7 @@ async function createFilters() {
         const gallery = document.querySelector(".gallery")
         gallery.innerHTML = ""
 
-        afficherTravaux(travaux)
+        displayWorks(works)
     });
 
     filters.appendChild(buttonAll)
@@ -127,16 +127,16 @@ async function createFilters() {
 
             event.target.classList.add("filter-active")
             
-            const categoriesId = event.target.dataset.categoryId;
+            const categoryId = event.target.dataset.categoryId;
 
-            const travauxFiltrees = travaux.filter(function(travail) {
-            return travail.categoryId === Number(categoriesId);                
+            const filteredWorks = works.filter(function(work) {
+            return work.categoryId === Number(categoryId);                
             });
             
             const gallery = document.querySelector(".gallery")
             gallery.innerHTML = ""
 
-            afficherTravaux(travauxFiltrees)
+            displayWorks(filteredWorks)
         });        
 
         filters.appendChild(button)
@@ -145,47 +145,46 @@ async function createFilters() {
 
 
 
-function afficherTravauxModal(listeTravaux) {
+function displayWorksModal(worksList) {
     const galleryContent = document.querySelector(".gallery-content")
 
-    for(let i = 0; i < listeTravaux.length; i++){
+    for(let i = 0; i < worksList.length; i++){
     const figure = document.createElement("figure")
     const image = document.createElement("img")
-    const deleteImg = document.createElement("button")
+    const deleteButton = document.createElement("button")
 
-    deleteImg.classList.add("delete-button");
-    deleteImg.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+    deleteButton.classList.add("delete-button");
+    deleteButton.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
 
-    image.setAttribute("src", listeTravaux[i].imageUrl)
-    deleteImg.dataset.id = listeTravaux[i].id;
+    image.setAttribute("src", worksList[i].imageUrl)
+    deleteButton.dataset.id = worksList[i].id;
 
-    deleteImg.addEventListener("click", async (event) => {
+    deleteButton.addEventListener("click", async (event) => {
 
-            const reponse = await fetch(`http://localhost:5678/api/works/${deleteImg.dataset.id}`, {
+            const response = await fetch(`http://localhost:5678/api/works/${deleteButton.dataset.id}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
 
-        if (reponse.ok) {
+        if (response.ok) {
             event.target.closest("figure").remove()
-            const travauxFiltrees = travaux.filter(function(travail) {
-                return travail.id !== Number(deleteImg.dataset.id)
-
-               
+            const filteredWorks = works.filter(function(work) {
+                return work.id !== Number(deleteButton.dataset.id)               
             });
-             travaux = travauxFiltrees
+
+            works = filteredWorks
 
             const gallery = document.querySelector(".gallery")
             gallery.innerHTML = ""
-            afficherTravaux(travaux)
+            displayWorks(works)
         }
         
     });
 
     figure.appendChild(image)
-    figure.appendChild(deleteImg)
+    figure.appendChild(deleteButton)
     galleryContent.appendChild(figure)
     }
 };
@@ -197,37 +196,52 @@ modifyButton.addEventListener("click", () => {
     modal.classList.add("visible")
 });
 
-function fermerModal() {
+function closeModal() {
     modal.classList.remove("visible");
-    affichageForm.classList.remove("visible");
-    affichageGallery.classList.remove("cache");
-}
+    formDisplay.classList.remove("visible");
+    galleryDisplay.classList.remove("cache");
+
+    modalForm.reset();
+    errorMessage.textContent = ""
+
+    const image = fileModalContent.querySelector("img");
+
+    if (image) {
+        image.remove()
+        fileModalContentElement.forEach((contentElement) => {
+        contentElement.classList.remove("cache")
+        });
+        modalFile.value = ""
+    };
+
+    checkForm()
+};
 
 modal.addEventListener("click", event => {
     if (event.target === modal) {
-        fermerModal()
+        closeModal()
     };
 });
 
 closeButtons.forEach((closeButton) => {
     closeButton.addEventListener("click", () => {
-        fermerModal()
+        closeModal()
     });
 });
 
 accessForm.addEventListener("click", () => {
-    affichageGallery.classList.add("cache")
-    affichageForm.classList.add("visible")
+    galleryDisplay.classList.add("cache")
+    formDisplay.classList.add("visible")
 });
 
 backButton.addEventListener("click", () => {
-    affichageForm.classList.remove("visible")
-    affichageGallery.classList.remove("cache")
+    formDisplay.classList.remove("visible")
+    galleryDisplay.classList.remove("cache")
 });
 
-fileModal.addEventListener("change", (event) => {
-    const fichier = event.target.files[0]
-    const imageURL = URL.createObjectURL(fichier);
+modalFile.addEventListener("change", (event) => {
+    const file = event.target.files[0]
+    const imageURL = URL.createObjectURL(file);
     const image = document.createElement("img")
     image.src = imageURL
 
@@ -242,10 +256,10 @@ fileModal.addEventListener("change", (event) => {
 
 async function createCategories() {
 
-    const optionVide = document.createElement("option");
-    optionVide.innerText = "";
-    optionVide.value = "";
-    selectModal.appendChild(optionVide);
+    const emptyOption = document.createElement("option");
+    emptyOption.innerText = "";
+    emptyOption.value = "";
+    modalSelect.appendChild(emptyOption);
 
     for (let i = 0; i < categories.length; i++) {
         const option = document.createElement("option")
@@ -253,7 +267,7 @@ async function createCategories() {
         option.setAttribute("value", categories[i].id)
         option.innerText = categories[i].name
         
-        selectModal.appendChild(option)
+        modalSelect.appendChild(option)
     }
 };
 
@@ -263,23 +277,23 @@ async function createCategories() {
 modalForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const file = fileModal.files[0]
-    const title = titleModal.value;
-    const categorie = selectModal.value
+    const file = modalFile.files[0]
+    const title = modalTitle.value;
+    const category = modalSelect.value
 
     if (title === "") {
-        messageError.textContent = "Veuillez saisir un titre";
+        errorMessage.textContent = "Veuillez saisir un titre";
     } else if (file === undefined) {
-                messageError.textContent = "Veuillez sélectionner un fichier";
-        } else if (categorie === "") {
-                     messageError.textContent = "Veuillez sélectionner une catégorie";
+                errorMessage.textContent = "Veuillez sélectionner un fichier";
+        } else if (category === "") {
+                     errorMessage.textContent = "Veuillez sélectionner une catégorie";
     } else {
         const formData = new FormData();
         formData.append("image", file);
         formData.append("title", title);
-        formData.append("category", categorie);
+        formData.append("category", category);
 
-        const reponse = await fetch("http://localhost:5678/api/works", {
+        const response = await fetch("http://localhost:5678/api/works", {
             method: "POST",
             headers: {
             Authorization: `Bearer ${token}`
@@ -287,15 +301,17 @@ modalForm.addEventListener("submit", async (event) => {
             body: formData
         });
 
-        if(reponse.ok){
-            const newWork = await reponse.json();
+        if(response.ok){
+            const newWork = await response.json();
 
-            travaux.push(newWork);
+            works.push(newWork);
 
-            afficherTravaux([newWork]);
-            afficherTravauxModal([newWork]);
+            displayWorks([newWork]);
+            displayWorksModal([newWork]);
 
             modalForm.reset()
+            errorMessage.textContent = ""
+            checkForm()
 
             const image = fileModalContent.querySelector("img");
 
@@ -304,6 +320,7 @@ modalForm.addEventListener("submit", async (event) => {
                 fileModalContentElement.forEach((contentElement) => {
                     contentElement.classList.remove("cache")
                 });
+                modalFile.value = ""
             }
         } 
     };  
@@ -316,34 +333,34 @@ function checkForm () {
 
     const submitForm = document.querySelector(".submit-form");
 
-    if (titleModal.value !== "" && fileModal.files[0] !== undefined && selectModal.value !== "") {
+    if (modalTitle.value !== "" && modalFile.files[0] !== undefined && modalSelect.value !== "") {
         submitForm.classList.add("active")
     } else {
         submitForm.classList.remove("active")
     };
 };
 
-titleModal.addEventListener("input", () => {
+modalTitle.addEventListener("input", () => {
     checkForm();
     });
 
-fileModal.addEventListener("change", () => {
+modalFile.addEventListener("change", () => {
     checkForm();
 });
 
-selectModal.addEventListener("change", () => {
+modalSelect.addEventListener("change", () => {
     checkForm();
 });
 
 
 
-async function initialiser() {
-    await recupererTravaux()
-    afficherTravaux(travaux)
+async function initialize() {
+    await getWorks()
+    displayWorks(works)
     await createFilters()
-    afficherTravauxModal(travaux)
+    displayWorksModal(works)
     await createCategories()
 }
 
-initialiser()
+initialize()
 
