@@ -1,14 +1,14 @@
 const email = document.querySelector("#e-mail");
-const motDePasse = document.querySelector("#mot-de-passe");
-const formulaire = document.querySelector("#login-form");
-const messageErreur = document.querySelector("#message-error");
+const password = document.querySelector("#mot-de-passe");
+const form = document.querySelector("#login-form");
+const errorMessage = document.querySelector("#message-error");
 
    
-formulaire.addEventListener("submit", async function(event) {
+form.addEventListener("submit", async function(event) {
     event.preventDefault()
 
     const emailValue = email.value 
-    const motDePasseValue = motDePasse.value
+    const passwordValue = password.value
 
     const reponse = await fetch("http://localhost:5678/api/users/login", {
         method: "POST",
@@ -17,16 +17,16 @@ formulaire.addEventListener("submit", async function(event) {
         },
         body: JSON.stringify({
             email: emailValue,
-            password: motDePasseValue
+            password: passwordValue
         })
     });
-    const donnéesUtilisateur = await reponse.json()
+    const userData = await reponse.json()
 
     if (reponse.ok) {
-        window.localStorage.setItem("token", donnéesUtilisateur.token)
+        window.localStorage.setItem("token", userData.token)
         window.location.href = "index.html"
     } else {
-        messageErreur.textContent = "Identifiant ou mot de passe incorrect."
+        errorMessage.textContent = "Identifiant ou mot de passe incorrect."
         };
 });
 
